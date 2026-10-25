@@ -1,16 +1,24 @@
-# React + Vite
+# ⚡ NexaWeather AI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Next-generation, high-end, futuristic neon-styled weather intelligence dashboard built with React, Open-Meteo API, and OpenStreetMap.
 
-Currently, two official plugins are available:
+## 🚀 Features
+* **Live Atmospheric Telemetry:** Real-time weather data, temperature, humidity, wind vector speed, pressure, and air quality.
+* **Meteo Intelligence Map:** Fully interactive OpenStreetMap with global search and live weather condition markers.
+* **Interactive Layers:** Professional layer toggles for Wind, Rain, Temperature, and Clouds with dynamic legends.
+* **AI Assistant Node:** Smart weather advisor and conversational assistant.
+* **Advanced Temperature Timeline:** 24-hour visual telemetry progression.
+* **Global Overview & Cyclone Tracker:** Atmospheric metrics, weather warnings, and tropical cyclone satellite tracking.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠️ Tech Stack
+* **Frontend:** React, Lucide-react, Leaflet (React-Leaflet)
+* **APIs:** Open-Meteo Weather Forecast API, Open-Meteo Geocoding API, Nominatim OpenStreetMap
+* **Styling:** Custom CSS, Glassmorphism UI, Neon Glow Accents
 
-## React Compiler
+## ⚙️ Getting Started & Installation
+To run this project locally on your machine:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/TOMAR_GITHUB_USERNAME/nexa-weather-ai.git](https://github.com/TOMAR_GITHUB_USERNAME/nexa-weather-ai.git)
+   cd nexa-weather-ai
