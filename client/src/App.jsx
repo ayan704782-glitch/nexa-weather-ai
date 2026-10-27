@@ -172,7 +172,6 @@ export default function App() {
     detectUserLocation();
   }, []);
 
-  // Smart Typo-Tolerant Search Handler
   const handleSearch = async (e, cityNameQuery) => {
     if (e) e.preventDefault();
     const rawQuery = cityNameQuery || searchQuery;
@@ -186,7 +185,6 @@ export default function App() {
       "delh": "Delhi",
       "delli": "Delhi",
       "banga": "Bangalore",
-      "bengaluru": "Bangalore",
       "chenai": "Chennai",
       "hydrabad": "Hyderabad"
     };
@@ -214,7 +212,6 @@ export default function App() {
     }
   };
 
-  // 100% Intelligent Context-Aware AI Assistant
   const handleAskAI = () => {
     if (!aiQuestion.trim()) return;
     const q = aiQuestion.toLowerCase();
@@ -243,7 +240,7 @@ export default function App() {
     setAiQuestion("");
   };
 
-  // 100% Guaranteed Dynamic Sun Status Function based on live system hour
+  // Real-Time Dynamic Sun Telemetry Status
   const getLiveSunStatusText = () => {
     const currentHour = new Date().getHours();
     
@@ -267,7 +264,6 @@ export default function App() {
 
   const sunStatus = getLiveSunStatusText();
 
-  // Dynamic Summary & Activity for AI Card Header
   const getDynamicAISummary = () => {
     const temp = Number(currentWeather.temp) || 26;
     const hum = parseInt(currentWeather.humidity, 10) || 65;
