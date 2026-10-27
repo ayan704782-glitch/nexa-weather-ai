@@ -196,7 +196,6 @@ export default function App() {
     }
   };
 
-  // 100% Intelligent Context-Aware AI Answer Generator
   const handleAskAI = () => {
     if (!aiQuestion.trim()) return;
     const q = aiQuestion.toLowerCase();
@@ -428,6 +427,17 @@ export default function App() {
                 <circle cx="600" cy="75" r="5" fill="#ffffff" stroke="#38bdf8" strokeWidth="3" />
               </svg>
             </div>
+          </div>
+
+          {/* Live Hourly Time Strip under the 24h Chart */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginLeft: "35px", marginTop: "16px", overflowX: "auto", paddingBottom: "4px" }}>
+            {currentWeather.hourly && currentWeather.hourly.slice(0, 8).map((h, idx) => (
+              <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", minWidth: "50px", fontSize: "11px", color: "#94a3b8" }}>
+                <span>{h.time}</span>
+                <span style={{ fontSize: "13px", fontWeight: "700", color: "#f8fafc" }}>{h.temp}</span>
+                <span style={{ fontSize: "12px" }}>{h.hour >= 6 && h.hour <= 18 ? "☀️" : "🌙"}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
