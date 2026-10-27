@@ -241,53 +241,6 @@ export default function App() {
     setAiQuestion("");
   };
 
-  // 100% Precise Accurate Sun & Twilight Telemetry Tracker based on API Sunrise/Sunset times
-  const getAccurateSunTelemetry = () => {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-    const parseTimeToMins = (timeStr) => {
-      if (!timeStr) return 0;
-      const [time, modifier] = timeStr.split(" ");
-      let [h, m] = time.split(":").map(Number);
-      if (modifier === "PM" && h < 12) h += 12;
-      if (modifier === "AM" && h === 12) h = 0;
-      return h * 60 + m;
-    };
-
-    const sunriseMins = parseTimeToMins(currentWeather.sunrise);
-    const sunsetMins = parseTimeToMins(currentWeather.sunset);
-
-    if (currentMinutes < sunriseMins) {
-      return {
-        sunriseSub: "Pre-dawn twilight • Telemetry armed 🌅",
-        sunsetSub: "Night telemetry active • Dusk pending"
-      };
-    } else if (currentMinutes >= sunriseMins && currentMinutes <= sunriseMins + 120) {
-      return {
-        sunriseSub: "Morning twilight active • Dawn live ☀️",
-        sunsetSub: "Evening twilight pending • Dusk horizon"
-      };
-    } else if (currentMinutes > sunriseMins + 120 && currentMinutes < sunsetMins) {
-      return {
-        sunriseSub: "Solar zenith active • Peak daylight ✓",
-        sunsetSub: "Daylight active • Dusk approaching ⏳"
-      };
-    } else if (currentMinutes >= sunsetMins && currentMinutes <= sunsetMins + 120) {
-      return {
-        sunriseSub: "Dawn completed • Cycle finished",
-        sunsetSub: "Evening twilight active • Dusk live 🌇"
-      };
-    } else {
-      return {
-        sunriseSub: "Dawn completed • Next cycle tomorrow",
-        sunsetSub: "Night telemetry active • Dusk passed 🌙"
-      };
-    }
-  };
-
-  const sunStatus = getAccurateSunTelemetry();
-
   const getDynamicAISummary = () => {
     const temp = Number(currentWeather.temp) || 26;
     const hum = parseInt(currentWeather.humidity, 10) || 65;
@@ -426,31 +379,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Sunrise & Sunset Dynamic Real-Time Telemetry Cards */}
-      <section style={{ maxWidth: "1380px", margin: "24px auto 0", padding: "0 20px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "20px" }}>
-          
-          {/* Sunrise Card */}
-          <div style={{ background: "linear-gradient(145deg, rgba(11, 18, 36, 0.95), rgba(7, 11, 22, 0.98))", border: "1px solid rgba(251, 191, 36, 0.3)", borderRadius: "22px", padding: "24px 28px", boxShadow: "0 15px 35px rgba(0,0,0,0.5)" }}>
-            <span style={{ fontSize: "11px", fontWeight: "800", letterSpacing: "1px", color: "#fbbf24" }}>SUNRISE TELEMETRY</span>
-            <div style={{ fontSize: "40px", fontWeight: "700", fontFamily: "Space Grotesk, sans-serif", color: "#ffffff", margin: "10px 0 4px 0" }}>
-              {currentWeather.sunrise}
-            </div>
-            <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>{sunStatus.sunriseSub}</p>
-          </div>
-
-          {/* Sunset Card */}
-          <div style={{ background: "linear-gradient(145deg, rgba(11, 18, 36, 0.95), rgba(7, 11, 22, 0.98))", border: "1px solid rgba(168, 85, 247, 0.3)", borderRadius: "22px", padding: "24px 28px", boxShadow: "0 15px 35px rgba(0,0,0,0.5)" }}>
-            <span style={{ fontSize: "11px", fontWeight: "800", letterSpacing: "1px", color: "#c084fc" }}>SUNSET TELEMETRY</span>
-            <div style={{ fontSize: "40px", fontWeight: "700", fontFamily: "Space Grotesk, sans-serif", color: "#ffffff", margin: "10px 0 4px 0" }}>
-              {currentWeather.sunset}
-            </div>
-            <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>{sunStatus.sunsetSub}</p>
-          </div>
-
-        </div>
-      </section>
-
+      {/* Hourly Telemetry Section (Includes original dynamic Sunrise & Sunset horizon cards) */}
       <div style={{ maxWidth: "1380px", margin: "20px auto 0", padding: "0 20px" }}>
         <HourlyTelemetrySection hourlyData={currentWeather.hourly} currentWeatherData={currentWeather} />
       </div>

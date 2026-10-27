@@ -21,15 +21,12 @@ export default function HourlyTelemetrySection({ hourlyData = [], currentWeather
   const renderWeatherIcon = (code, hourNum) => {
     const isNight = hourNum < 6 || hourNum >= 18;
     
-    // Rainy weather codes in Open-Meteo (51, 53, 55, 61, 63, 65, 80, etc.)
     if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) {
       return <CloudRain size={26} style={{ color: "#38bdf8" }} />;
     }
-    // Cloudy / Overcast codes (1, 2, 3, 45, 48)
     if ([1, 2, 3, 45, 48].includes(code)) {
       return <Cloud size={26} style={{ color: "#94a3b8" }} />;
     }
-    // Clear / Sunny codes
     if (isNight) {
       return <Moon size={24} style={{ color: "#818cf8" }} />;
     }
@@ -41,8 +38,8 @@ export default function HourlyTelemetrySection({ hourlyData = [], currentWeather
     { time: "18:00", temp: "25°", code: 0, hour: 18, active: false },
     { time: "19:00", temp: "25°", code: 1, hour: 19, active: false },
     { time: "20:00", temp: "25°", code: 2, hour: 20, active: false },
-    { time: "21:00", temp: "24°", code: 61, hour: 21, active: false }, // Rain example at night
-    { time: "22:00", temp: "24°", code: 61, hour: 22, active: false }, // Rain example at night
+    { time: "21:00", temp: "24°", code: 61, hour: 21, active: false },
+    { time: "22:00", temp: "24°", code: 61, hour: 22, active: false },
     { time: "23:00", temp: "24°", code: 3, hour: 23, active: false },
   ];
 
@@ -71,10 +68,34 @@ export default function HourlyTelemetrySection({ hourlyData = [], currentWeather
   const sunrise = formatLiveTime(currentWeatherData?.sunrise || "05:42 AM");
   const sunset = formatLiveTime(currentWeatherData?.sunset || "05:14 PM");
 
+  // Real-Time Dynamic Sun Telemetry Status inside the component
+  const getLiveSunTelemetry = () => {
+    const currentHour = new Date().getHours();
+    
+    if (currentHour >= 4 && currentHour < 12) {
+      return {
+        sunriseSub: "Morning twilight active • Dawn live 🌅",
+        sunsetSub: "Evening twilight pending • Dusk horizon"
+      };
+    } else if (currentHour >= 12 && currentHour < 18) {
+      return {
+        sunriseSub: "Dawn completed • Solar zenith active ✓",
+        sunsetSub: "Approaching dusk • Sunset telemetry armed ⏳"
+      };
+    } else {
+      return {
+        sunriseSub: "Dawn completed • Next cycle tomorrow",
+        sunsetSub: "Night telemetry active • Dusk horizon passed 🌙"
+      };
+    }
+  };
+
+  const sunStatus = getLiveSunTelemetry();
+
   return (
     <div className="nexa-telemetry-wrapper">
       
-      {/* 1. 24-HOUR TELEMETRY PROGRESSION (REALISTIC ICONS & RAIN TIMING) */}
+      {/* 1. 24-HOUR TELEMETRY PROGRESSION */}
       <div className="hourly-progression-block">
         <div className="hourly-strip-panel">
           <div className="hourly-strip-header">
@@ -242,7 +263,7 @@ export default function HourlyTelemetrySection({ hourlyData = [], currentWeather
 
       </div>
 
-      {/* 3. SUNRISE AND SUNSET HORIZON CARDS */}
+      {/* 3. DYNAMIC SUNRISE AND SUNSET HORIZON CARDS */}
       <div className="horizon-cards-row">
         
         <div className="horizon-card sunrise-card">
@@ -264,7 +285,7 @@ export default function HourlyTelemetrySection({ hourlyData = [], currentWeather
             <div className="horizon-text-block">
               <span className="horizon-eyebrow amber-eyebrow">Sunrise</span>
               <strong className="horizon-time">{sunrise}</strong>
-              <p className="horizon-sub">Morning twilight • Dawn horizon</p>
+              <p className="horizon-sub">{sunStatus.sunriseSub}</p>
             </div>
           </div>
         </div>
@@ -288,7 +309,7 @@ export default function HourlyTelemetrySection({ hourlyData = [], currentWeather
             <div className="horizon-text-block">
               <span className="horizon-eyebrow purple-eyebrow">Sunset</span>
               <strong className="horizon-time">{sunset}</strong>
-              <p className="horizon-sub">Evening twilight • Dusk horizon</p>
+              <p className="horizon-sub">{sunStatus.sunsetSub}</p>
             </div>
           </div>
         </div>
