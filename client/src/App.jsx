@@ -214,7 +214,7 @@ export default function App() {
     }
   };
 
-  // 100% Intelligent, Multi-Metric Context-Aware AI Assistant
+  // 100% Intelligent Context-Aware AI Assistant
   const handleAskAI = () => {
     if (!aiQuestion.trim()) return;
     const q = aiQuestion.toLowerCase();
@@ -227,45 +227,37 @@ export default function App() {
     const isNight = currentWeather.isDay === 0;
     const city = currentWeather.city;
 
-    if (q.includes("umbrella") || q.includes("rain") || q.includes("brishti")) {
-      if (cond.includes("rain") || hum > 85) {
-        advice = `Yes, carrying an umbrella is recommended in ${city}! High humidity (${currentWeather.humidity}) and ${cond} skies indicate possible precipitation.`;
-      } else {
-        advice = `No immediate umbrella needed in ${city} right now as conditions are ${cond} at ${temp}°C.`;
-      }
-    } else if (q.includes("run") || q.includes("walk") || q.includes("jog") || q.includes("outdoor")) {
-      advice = `At ${temp}°C with ${cond} skies in ${city}, conditions are optimal for your ${isNight ? "evening walk or night jog" : "outdoor run or walk"}!`;
-    } else if (q.includes("sunrise") || q.includes("sunset") || q.includes("sun")) {
-      advice = `Today in ${city}, sunrise occurs at ${currentWeather.sunrise} and sunset at ${currentWeather.sunset}.`;
+    if (q.includes("umbrella") || q.includes("rain")) {
+      advice = cond.includes("rain") || hum > 85 
+        ? `Yes, carrying an umbrella is recommended in ${city} due to high humidity (${currentWeather.humidity}) and ${cond} skies.`
+        : `No immediate umbrella needed right now in ${city} as conditions are ${cond} at ${temp}°C.`;
+    } else if (q.includes("run") || q.includes("walk") || q.includes("jog")) {
+      advice = `At ${temp}°C with ${cond} skies in ${city}, conditions are great for your ${isNight ? "evening walk or night jog" : "outdoor run"}!`;
+    } else if (q.includes("sunrise") || q.includes("sunset")) {
+      advice = `Today in ${city}, sunrise is at ${currentWeather.sunrise} and sunset is at ${currentWeather.sunset}.`;
     } else {
-      advice = `Live atmospheric telemetry for ${city}: ${temp}°C (feels like ${feels}°C), ${cond} skies, and ${currentWeather.humidity} humidity.`;
+      advice = `Live atmospheric telemetry for ${city}: ${temp}°C, ${cond} skies, and ${currentWeather.humidity} humidity.`;
     }
 
     setAiResponse(`Nexa AI: ${advice}`);
     setAiQuestion("");
   };
 
-  // Robust Live Real-Time Sun & Twilight Telemetry Tracker
-  const getLiveSunTelemetry = () => {
-    const now = new Date();
-    const currentHour = now.getHours(); // 0 to 23 format
-
-    // If current time is between 4 AM and 11 AM -> Morning / Dawn active
+  // 100% Guaranteed Dynamic Sun Status Function based on live system hour
+  const getLiveSunStatusText = () => {
+    const currentHour = new Date().getHours();
+    
     if (currentHour >= 4 && currentHour < 12) {
       return {
-        sunriseSub: "Morning twilight active • Dawn telemetry live 🌅",
+        sunriseSub: "Morning twilight active • Dawn live 🌅",
         sunsetSub: "Evening twilight pending • Dusk horizon"
       };
-    } 
-    // If current time is between 12 PM and 5 PM -> Peak Daylight / Solar Zenith
-    else if (currentHour >= 12 && currentHour < 18) {
+    } else if (currentHour >= 12 && currentHour < 18) {
       return {
         sunriseSub: "Dawn completed • Solar zenith active ✓",
         sunsetSub: "Approaching dusk • Sunset telemetry armed ⏳"
       };
-    } 
-    // If current time is evening or night (6 PM to 3 AM) -> Night / Dusk active
-    else {
+    } else {
       return {
         sunriseSub: "Dawn completed • Next cycle scheduled tomorrow",
         sunsetSub: "Night telemetry active • Dusk horizon passed 🌙"
@@ -273,7 +265,7 @@ export default function App() {
     }
   };
 
-  const sunStatus = getLiveSunTelemetry();
+  const sunStatus = getLiveSunStatusText();
 
   // Dynamic Summary & Activity for AI Card Header
   const getDynamicAISummary = () => {
@@ -414,7 +406,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Sunrise & Sunset Fully Dynamic Real-Time Telemetry Cards */}
+      {/* Sunrise & Sunset Dynamic Real-Time Telemetry Cards */}
       <section style={{ maxWidth: "1380px", margin: "24px auto 0", padding: "0 20px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "20px" }}>
           
