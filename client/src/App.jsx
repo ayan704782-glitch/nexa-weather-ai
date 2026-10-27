@@ -227,39 +227,63 @@ export default function App() {
     const isNight = currentWeather.isDay === 0;
     const city = currentWeather.city;
 
-    if (q.includes("umbrella") || q.includes("rain") || q.includes("brishti") || q.includes("wet")) {
+    if (q.includes("umbrella") || q.includes("rain") || q.includes("brishti")) {
       if (cond.includes("rain") || hum > 85) {
         advice = `Yes, carrying an umbrella is recommended in ${city}! High humidity (${currentWeather.humidity}) and ${cond} skies indicate possible precipitation.`;
       } else {
         advice = `No immediate umbrella needed in ${city} right now as conditions are ${cond} at ${temp}°C.`;
       }
-    } else if (q.includes("run") || q.includes("walk") || q.includes("jog") || q.includes("outdoor") || q.includes("workout")) {
-      advice = `At ${temp}°C with ${cond} skies in ${city}, conditions are optimal for your ${isNight ? "evening walk or night jog" : "outdoor run or walk"}! Enjoy the fresh breeze.`;
-    } else if (q.includes("wear") || q.includes("cloth") || q.includes("jacket")) {
-      advice = `With ${temp}°C and ${currentWeather.humidity} humidity in ${city}, light and breathable clothing is best suited for today's weather.`;
+    } else if (q.includes("run") || q.includes("walk") || q.includes("jog") || q.includes("outdoor")) {
+      advice = `At ${temp}°C with ${cond} skies in ${city}, conditions are optimal for your ${isNight ? "evening walk or night jog" : "outdoor run or walk"}!`;
     } else if (q.includes("sunrise") || q.includes("sunset") || q.includes("sun")) {
       advice = `Today in ${city}, sunrise occurs at ${currentWeather.sunrise} and sunset at ${currentWeather.sunset}.`;
     } else {
-      advice = `Live atmospheric telemetry for ${city}: ${temp}°C (feels like ${feels}°C), ${cond} skies, and ${currentWeather.humidity} humidity. Everything is stable!`;
+      advice = `Live atmospheric telemetry for ${city}: ${temp}°C (feels like ${feels}°C), ${cond} skies, and ${currentWeather.humidity} humidity.`;
     }
 
     setAiResponse(`Nexa AI: ${advice}`);
     setAiQuestion("");
   };
 
-  // Dynamic Real-Time Sun Status Tracker
-  const getSunTelemetryStatus = () => {
-    const currentHour = new Date().getHours();
-    if (currentHour >= 4 && currentHour < 7) {
-      return { sunriseSub: "Morning twilight • Dawn active 🌅", sunsetSub: "Evening twilight • Dusk approaching" };
-    } else if (currentHour >= 7 && currentHour < 17) {
-      return { sunriseSub: "Solar zenith • Peak daylight", sunsetSub: "Evening twilight • Dusk horizon" };
+  // Fully Dynamic Real-Time Sun Status Tracker based on System Clock & API Data
+  const getDynamicSunStatus = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+    const totalCurrentMins = currentHour * 60 + currentMinutes;
+
+    // Convert sunrise/sunset strings (e.g. "05:37 AM", "05:02 PM") to minutes for smart comparison
+    const parseTimeToMins = (timeStr) => {
+      if (!timeStr) return 0;
+      const [time, modifier] = timeStr.split(" ");
+      let [h, m] = time.split(":").map(Number);
+      if (modifier === "PM" && h < 12) h += 12;
+      if (modifier === "AM" && h === 12) h = 0;
+      return h * 60 + m;
+    };
+
+    const sunriseMins = parseTimeToMins(currentWeather.sunrise);
+    const sunsetMins = parseTimeToMins(currentWeather.sunset);
+
+    if (totalCurrentMins < sunriseMins) {
+      return {
+        sunriseSub: "Approaching dawn • Telemetry armed 🌅",
+        sunsetSub: "Evening twilight • Dusk approaching"
+      };
+    } else if (totalCurrentMins >= sunriseMins && totalCurrentMins <= sunsetMins) {
+      return {
+        sunriseSub: "Solar zenith active • Dawn completed ✓",
+        sunsetSub: "Daylight active • Dusk approaching ⏳"
+      };
     } else {
-      return { sunriseSub: "Morning twilight • Dawn approaching", sunsetSub: "Night telemetry • Dusk active 🌙" };
+      return {
+        sunriseSub: "Dawn completed • Next cycle tomorrow",
+        sunsetSub: "Night telemetry active • Dusk passed 🌙"
+      };
     }
   };
 
-  const sunStatus = getSunTelemetryStatus();
+  const sunStatus = getDynamicSunStatus();
 
   // Dynamic Summary & Activity for AI Card Header
   const getDynamicAISummary = () => {
@@ -400,7 +424,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Sunrise & Sunset Live Telemetry Cards */}
+      {/* Sunrise & Sunset Live Dynamic Telemetry Cards */}
       <section style={{ maxWidth: "1380px", margin: "24px auto 0", padding: "0 20px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "20px" }}>
           
