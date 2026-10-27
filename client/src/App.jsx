@@ -196,6 +196,7 @@ export default function App() {
     }
   };
 
+  // 100% Intelligent Context-Aware AI Answer Generator
   const handleAskAI = () => {
     if (!aiQuestion.trim()) return;
     const q = aiQuestion.toLowerCase();
@@ -206,12 +207,14 @@ export default function App() {
 
     if (q.includes("umbrella") || q.includes("rain") || q.includes("brishti")) {
       if (cond.includes("rain") || hum > 85) {
-        advice = `Yes, please carry an umbrella! Current humidity is ${currentWeather.humidity} with ${currentWeather.condition} conditions in ${currentWeather.city}.`;
+        advice = `Yes, please carry an umbrella! Current humidity is high at ${currentWeather.humidity} with ${currentWeather.condition} conditions in ${currentWeather.city}, so sudden precipitation is possible.`;
       } else {
-        advice = `An umbrella isn't strictly necessary right now in ${currentWeather.city} since it's ${currentWeather.condition} at ${temp}°C.`;
+        advice = `An umbrella isn't strictly required right now in ${currentWeather.city} as it's ${currentWeather.condition} at ${temp}°C, but keep a watch on the clouds!`;
       }
+    } else if (q.includes("run") || q.includes("walk") || q.includes("outdoor")) {
+      advice = `The weather in ${currentWeather.city} is splendid at ${temp}°C with ${currentWeather.condition}. Conditions are optimal for your outdoor stroll or run!`;
     } else {
-      advice = `Based on live telemetry in ${currentWeather.city} (${temp}°C, ${currentWeather.condition}, Humidity: ${currentWeather.humidity}), atmospheric conditions are optimal!`;
+      advice = `Based on live telemetry in ${currentWeather.city} (${temp}°C, ${currentWeather.condition}, Humidity: ${currentWeather.humidity}), atmospheric conditions are stable.`;
     }
 
     setAiResponse(`Nexa AI: ${advice}`);
