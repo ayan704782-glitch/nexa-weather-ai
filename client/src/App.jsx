@@ -185,6 +185,7 @@ export default function App() {
       "delh": "Delhi",
       "delli": "Delhi",
       "banga": "Bangalore",
+      "bengaluru": "Bangalore",
       "chenai": "Chennai",
       "hydrabad": "Hyderabad"
     };
@@ -240,29 +241,52 @@ export default function App() {
     setAiQuestion("");
   };
 
-  // Real-Time Dynamic Sun Telemetry Status
-  const getLiveSunStatusText = () => {
-    const currentHour = new Date().getHours();
-    
-    if (currentHour >= 4 && currentHour < 12) {
+  // 100% Precise Accurate Sun & Twilight Telemetry Tracker based on API Sunrise/Sunset times
+  const getAccurateSunTelemetry = () => {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    const parseTimeToMins = (timeStr) => {
+      if (!timeStr) return 0;
+      const [time, modifier] = timeStr.split(" ");
+      let [h, m] = time.split(":").map(Number);
+      if (modifier === "PM" && h < 12) h += 12;
+      if (modifier === "AM" && h === 12) h = 0;
+      return h * 60 + m;
+    };
+
+    const sunriseMins = parseTimeToMins(currentWeather.sunrise);
+    const sunsetMins = parseTimeToMins(currentWeather.sunset);
+
+    if (currentMinutes < sunriseMins) {
       return {
-        sunriseSub: "Morning twilight active • Dawn live 🌅",
+        sunriseSub: "Pre-dawn twilight • Telemetry armed 🌅",
+        sunsetSub: "Night telemetry active • Dusk pending"
+      };
+    } else if (currentMinutes >= sunriseMins && currentMinutes <= sunriseMins + 120) {
+      return {
+        sunriseSub: "Morning twilight active • Dawn live ☀️",
         sunsetSub: "Evening twilight pending • Dusk horizon"
       };
-    } else if (currentHour >= 12 && currentHour < 18) {
+    } else if (currentMinutes > sunriseMins + 120 && currentMinutes < sunsetMins) {
       return {
-        sunriseSub: "Dawn completed • Solar zenith active ✓",
-        sunsetSub: "Approaching dusk • Sunset telemetry armed ⏳"
+        sunriseSub: "Solar zenith active • Peak daylight ✓",
+        sunsetSub: "Daylight active • Dusk approaching ⏳"
+      };
+    } else if (currentMinutes >= sunsetMins && currentMinutes <= sunsetMins + 120) {
+      return {
+        sunriseSub: "Dawn completed • Cycle finished",
+        sunsetSub: "Evening twilight active • Dusk live 🌇"
       };
     } else {
       return {
-        sunriseSub: "Dawn completed • Next cycle scheduled tomorrow",
-        sunsetSub: "Night telemetry active • Dusk horizon passed 🌙"
+        sunriseSub: "Dawn completed • Next cycle tomorrow",
+        sunsetSub: "Night telemetry active • Dusk passed 🌙"
       };
     }
   };
 
-  const sunStatus = getLiveSunStatusText();
+  const sunStatus = getAccurateSunTelemetry();
 
   const getDynamicAISummary = () => {
     const temp = Number(currentWeather.temp) || 26;
