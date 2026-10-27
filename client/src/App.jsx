@@ -172,14 +172,31 @@ export default function App() {
     detectUserLocation();
   }, []);
 
+  // Smart Typo-Tolerant Search Handler
   const handleSearch = async (e, cityNameQuery) => {
     if (e) e.preventDefault();
-    const query = cityNameQuery || searchQuery;
-    if (!query.trim()) return;
+    const rawQuery = cityNameQuery || searchQuery;
+    if (!rawQuery.trim()) return;
+
+    const typoMap = {
+      "mumbia": "Mumbai",
+      "mambai": "Mumbai",
+      "kolkta": "Kolkata",
+      "kolakata": "Kolkata",
+      "delh": "Delhi",
+      "delli": "Delhi",
+      "banga": "Bangalore",
+      "chenai": "Chennai",
+      "hydrabad": "Hyderabad"
+    };
+
+    const cleanQuery = rawQuery.trim().toLowerCase();
+    const finalQuery = typoMap[cleanQuery] || rawQuery.trim();
 
     setLoading(true);
+    setErrorMessage("");
     try {
-      const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1`);
+      const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(finalQuery)}&count=5&language=en&format=json`);
       const geoData = await geoRes.json();
 
       if (geoData && geoData.results && geoData.results.length > 0) {
@@ -187,7 +204,7 @@ export default function App() {
         await fetchWeatherData(place.latitude, place.longitude, `${place.name}, ${place.country || ""}`);
         setSearchQuery("");
       } else {
-        setErrorMessage(`Location "${query}" not found.`);
+        setErrorMessage(`Location "${rawQuery}" not found.`);
       }
     } catch {
       setErrorMessage("Search service error.");
