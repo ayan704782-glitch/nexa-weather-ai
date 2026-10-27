@@ -245,45 +245,35 @@ export default function App() {
     setAiQuestion("");
   };
 
-  // Fully Dynamic Real-Time Sun Status Tracker based on System Clock & API Data
-  const getDynamicSunStatus = () => {
+  // Robust Live Real-Time Sun & Twilight Telemetry Tracker
+  const getLiveSunTelemetry = () => {
     const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinutes = now.getMinutes();
-    const totalCurrentMins = currentHour * 60 + currentMinutes;
+    const currentHour = now.getHours(); // 0 to 23 format
 
-    // Convert sunrise/sunset strings (e.g. "05:37 AM", "05:02 PM") to minutes for smart comparison
-    const parseTimeToMins = (timeStr) => {
-      if (!timeStr) return 0;
-      const [time, modifier] = timeStr.split(" ");
-      let [h, m] = time.split(":").map(Number);
-      if (modifier === "PM" && h < 12) h += 12;
-      if (modifier === "AM" && h === 12) h = 0;
-      return h * 60 + m;
-    };
-
-    const sunriseMins = parseTimeToMins(currentWeather.sunrise);
-    const sunsetMins = parseTimeToMins(currentWeather.sunset);
-
-    if (totalCurrentMins < sunriseMins) {
+    // If current time is between 4 AM and 11 AM -> Morning / Dawn active
+    if (currentHour >= 4 && currentHour < 12) {
       return {
-        sunriseSub: "Approaching dawn • Telemetry armed 🌅",
-        sunsetSub: "Evening twilight • Dusk approaching"
+        sunriseSub: "Morning twilight active • Dawn telemetry live 🌅",
+        sunsetSub: "Evening twilight pending • Dusk horizon"
       };
-    } else if (totalCurrentMins >= sunriseMins && totalCurrentMins <= sunsetMins) {
+    } 
+    // If current time is between 12 PM and 5 PM -> Peak Daylight / Solar Zenith
+    else if (currentHour >= 12 && currentHour < 18) {
       return {
-        sunriseSub: "Solar zenith active • Dawn completed ✓",
-        sunsetSub: "Daylight active • Dusk approaching ⏳"
+        sunriseSub: "Dawn completed • Solar zenith active ✓",
+        sunsetSub: "Approaching dusk • Sunset telemetry armed ⏳"
       };
-    } else {
+    } 
+    // If current time is evening or night (6 PM to 3 AM) -> Night / Dusk active
+    else {
       return {
-        sunriseSub: "Dawn completed • Next cycle tomorrow",
-        sunsetSub: "Night telemetry active • Dusk passed 🌙"
+        sunriseSub: "Dawn completed • Next cycle scheduled tomorrow",
+        sunsetSub: "Night telemetry active • Dusk horizon passed 🌙"
       };
     }
   };
 
-  const sunStatus = getDynamicSunStatus();
+  const sunStatus = getLiveSunTelemetry();
 
   // Dynamic Summary & Activity for AI Card Header
   const getDynamicAISummary = () => {
@@ -424,7 +414,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Sunrise & Sunset Live Dynamic Telemetry Cards */}
+      {/* Sunrise & Sunset Fully Dynamic Real-Time Telemetry Cards */}
       <section style={{ maxWidth: "1380px", margin: "24px auto 0", padding: "0 20px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "20px" }}>
           
