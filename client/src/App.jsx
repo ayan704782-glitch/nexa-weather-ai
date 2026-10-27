@@ -186,6 +186,7 @@ export default function App() {
       "delh": "Delhi",
       "delli": "Delhi",
       "banga": "Bangalore",
+      "bengaluru": "Bangalore",
       "chenai": "Chennai",
       "hydrabad": "Hyderabad"
     };
@@ -213,29 +214,96 @@ export default function App() {
     }
   };
 
+  // 100% Intelligent, Multi-Metric Context-Aware AI Assistant
   const handleAskAI = () => {
     if (!aiQuestion.trim()) return;
     const q = aiQuestion.toLowerCase();
     let advice = "";
-    const temp = currentWeather.temp;
-    const hum = parseInt(currentWeather.humidity) || 60;
-    const cond = currentWeather.condition.toLowerCase();
 
-    if (q.includes("umbrella") || q.includes("rain") || q.includes("brishti")) {
+    const temp = Number(currentWeather.temp) || 26;
+    const feels = Number(currentWeather.feelsLike) || temp;
+    const hum = parseInt(currentWeather.humidity, 10) || 65;
+    const cond = currentWeather.condition.toLowerCase();
+    const isNight = currentWeather.isDay === 0;
+    const city = currentWeather.city;
+
+    // 1. Rain / Umbrella Queries
+    if (q.includes("umbrella") || q.includes("rain") || q.includes("brishti") || q.includes("wet") || q.includes("storm")) {
       if (cond.includes("rain") || hum > 85) {
-        advice = `Yes, please carry an umbrella! Current humidity is high at ${currentWeather.humidity} with ${currentWeather.condition} conditions in ${currentWeather.city}, so sudden precipitation is possible.`;
+        advice = `Yes, carrying an umbrella is highly recommended in ${city}! With ${cond} skies and high humidity (${currentWeather.humidity}), rain or light showers are quite likely.`;
+      } else if (hum > 70) {
+        advice = `You probably don't need an umbrella right now in ${city} as it's ${temp}°C with ${cond} skies, though humidity is at ${currentWeather.humidity}. Keeping a compact umbrella handy is a smart backup.`;
       } else {
-        advice = `An umbrella isn't strictly required right now in ${currentWeather.city} as it's ${currentWeather.condition} at ${temp}°C, but keep a watch on the clouds!`;
+        advice = `No umbrella needed today in ${city}! The sky is ${cond} at ${temp}°C with comfortable humidity (${currentWeather.humidity}) and minimal chance of rain.`;
       }
-    } else if (q.includes("run") || q.includes("walk") || q.includes("outdoor")) {
-      advice = `The weather in ${currentWeather.city} is splendid at ${temp}°C with ${currentWeather.condition}. Conditions are optimal for your outdoor stroll or run!`;
-    } else {
-      advice = `Based on live telemetry in ${currentWeather.city} (${temp}°C, ${currentWeather.condition}, Humidity: ${currentWeather.humidity}), atmospheric conditions are stable.`;
+    } 
+    // 2. Outdoor Run / Walk / Exercise / Sports Queries
+    else if (q.includes("run") || q.includes("walk") || q.includes("jog") || q.includes("outdoor") || q.includes("workout") || q.includes("exercise") || q.includes("suitable") || q.includes("play") || q.includes("stroll")) {
+      if (cond.includes("rain")) {
+        advice = `It's currently not ideal for an outdoor run or walk in ${city} due to ${cond} conditions. Consider an indoor workout until the skies clear up!`;
+      } else if (temp >= 33 || feels >= 36) {
+        advice = `Proceed with caution! It's ${temp}°C (feels like ${feels}°C) in ${city} with ${currentWeather.humidity} humidity. A light walk is fine if you stay hydrated, but avoid intense running right now.`;
+      } else if (hum > 82) {
+        advice = `Yes, ${temp}°C with ${cond} skies in ${city} is suitable for an ${isNight ? "evening walk or light jog" : "outdoor run or walk"}, though ${currentWeather.humidity} humidity might make it feel slightly humid. Keep water handy and enjoy the ${currentWeather.windSpeed} breeze!`;
+      } else {
+        advice = `Yes, it's great weather for an ${isNight ? "evening walk or night jog" : "outdoor run or walk"} in ${city}! At a comfortable ${temp}°C (feels like ${feels}°C) with ${cond} skies and a ${currentWeather.windSpeed} breeze, conditions are very pleasant.`;
+      }
+    } 
+    // 3. Clothing / Wardrobe Queries
+    else if (q.includes("wear") || q.includes("cloth") || q.includes("jacket") || q.includes("dress") || q.includes("shirt") || q.includes("outfit")) {
+      if (temp <= 18) {
+        advice = `It's cool at ${temp}°C in ${city}. A light jacket, hoodie, or layered clothing will keep you comfortable outdoors.`;
+      } else if (temp >= 30 || hum > 80) {
+        advice = `With ${temp}°C (feels like ${feels}°C) and ${currentWeather.humidity} humidity in ${city}, go for lightweight, breathable cotton or moisture-wicking clothes.`;
+      } else {
+        advice = `At a pleasant ${temp}°C with ${cond} skies in ${city}, casual t-shirts or light comfortable wear are ideal right now.`;
+      }
+    } 
+    // 4. Sunrise / Sunset / Time Queries
+    else if (q.includes("sunrise") || q.includes("sunset") || q.includes("sun")) {
+      advice = `In ${city}, today's sunrise is at ${currentWeather.sunrise} and sunset is at ${currentWeather.sunset}. Current temperature is ${temp}°C with ${cond} conditions.`;
+    } 
+    // 5. Wind / Pressure / Humidity / General Weather Queries
+    else {
+      advice = `Live telemetry for ${city} shows ${temp}°C (feels like ${feels}°C) with ${cond} skies, ${currentWeather.humidity} humidity, and wind at ${currentWeather.windSpeed}. Overall atmospheric conditions are stable and comfortable!`;
     }
 
     setAiResponse(`Nexa AI: ${advice}`);
     setAiQuestion("");
   };
+
+  // Dynamic Summary & Activity for AI Card Header
+  const getDynamicAISummary = () => {
+    const temp = Number(currentWeather.temp) || 26;
+    const hum = parseInt(currentWeather.humidity, 10) || 65;
+    const cond = currentWeather.condition.toLowerCase();
+    const isNight = currentWeather.isDay === 0;
+
+    if (cond.includes("rain")) {
+      return {
+        quote: `"Wet atmospheric conditions detected in ${currentWeather.city} (${temp}°C, ${currentWeather.humidity} humidity). Best to stay cozy indoors or carry rain gear."`,
+        activity: "Indoor workout, reading, or a cozy cafe visit"
+      };
+    }
+    if (temp >= 33) {
+      return {
+        quote: `"Warm conditions in ${currentWeather.city} at ${temp}°C (feels like ${currentWeather.feelsLike}°C). Stay hydrated and limit direct midday sun exposure."`,
+        activity: "Indoor fitness, swimming, or late evening stroll"
+      };
+    }
+    if (hum > 85) {
+      return {
+        quote: `"Calm ${cond} skies in ${currentWeather.city} at ${temp}°C with high humidity (${currentWeather.humidity}) and a gentle ${currentWeather.windSpeed} breeze."`,
+        activity: isNight ? "Relaxed evening walk or rooftop dining" : "Light outdoor stroll or photography"
+      };
+    }
+    return {
+      quote: `"Pleasant ${cond} conditions in ${currentWeather.city} at ${temp}°C with ${currentWeather.pressure} pressure—ideal for stepping outside."`,
+      activity: isNight ? "Evening walk, night jog, or outdoor dining" : "Outdoor run, cycling, or tennis"
+    };
+  };
+
+  const aiSummary = getDynamicAISummary();
 
   const hourlyTemps = currentWeather.hourly.map(h => h.rawTemp ?? parseInt(h.temp));
   const peakWarmest = hourlyTemps.length > 0 ? Math.max(...hourlyTemps) : currentWeather.high;
@@ -368,10 +436,10 @@ export default function App() {
             <span className="section-kicker" style={{ marginBottom: "2px" }}>NEXA AI ASSISTANT</span>
             <h3 style={{ fontSize: "16px", fontWeight: "700", color: "#ffffff", marginBottom: "6px" }}>Atmospheric Intelligence & Advice</h3>
             <p className="ai-quote">
-              "Splendid weather in {currentWeather.city}! The atmospheric pressure and temperature are ideal for outdoor strolls."
+              {aiSummary.quote}
             </p>
             <div className="ai-activity" style={{ marginBottom: "14px" }}>
-              ✨ Recommended Activity: Evening walk or outdoor tennis
+              ✨ Recommended Activity: {aiSummary.activity}
             </div>
 
             <div className="ai-chat-box">
