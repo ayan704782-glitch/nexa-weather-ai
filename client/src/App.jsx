@@ -227,50 +227,39 @@ export default function App() {
     const isNight = currentWeather.isDay === 0;
     const city = currentWeather.city;
 
-    // 1. Rain / Umbrella Queries
-    if (q.includes("umbrella") || q.includes("rain") || q.includes("brishti") || q.includes("wet") || q.includes("storm")) {
+    if (q.includes("umbrella") || q.includes("rain") || q.includes("brishti") || q.includes("wet")) {
       if (cond.includes("rain") || hum > 85) {
-        advice = `Yes, carrying an umbrella is highly recommended in ${city}! With ${cond} skies and high humidity (${currentWeather.humidity}), rain or light showers are quite likely.`;
-      } else if (hum > 70) {
-        advice = `You probably don't need an umbrella right now in ${city} as it's ${temp}°C with ${cond} skies, though humidity is at ${currentWeather.humidity}. Keeping a compact umbrella handy is a smart backup.`;
+        advice = `Yes, carrying an umbrella is recommended in ${city}! High humidity (${currentWeather.humidity}) and ${cond} skies indicate possible precipitation.`;
       } else {
-        advice = `No umbrella needed today in ${city}! The sky is ${cond} at ${temp}°C with comfortable humidity (${currentWeather.humidity}) and minimal chance of rain.`;
+        advice = `No immediate umbrella needed in ${city} right now as conditions are ${cond} at ${temp}°C.`;
       }
-    } 
-    // 2. Outdoor Run / Walk / Exercise / Sports Queries
-    else if (q.includes("run") || q.includes("walk") || q.includes("jog") || q.includes("outdoor") || q.includes("workout") || q.includes("exercise") || q.includes("suitable") || q.includes("play") || q.includes("stroll")) {
-      if (cond.includes("rain")) {
-        advice = `It's currently not ideal for an outdoor run or walk in ${city} due to ${cond} conditions. Consider an indoor workout until the skies clear up!`;
-      } else if (temp >= 33 || feels >= 36) {
-        advice = `Proceed with caution! It's ${temp}°C (feels like ${feels}°C) in ${city} with ${currentWeather.humidity} humidity. A light walk is fine if you stay hydrated, but avoid intense running right now.`;
-      } else if (hum > 82) {
-        advice = `Yes, ${temp}°C with ${cond} skies in ${city} is suitable for an ${isNight ? "evening walk or light jog" : "outdoor run or walk"}, though ${currentWeather.humidity} humidity might make it feel slightly humid. Keep water handy and enjoy the ${currentWeather.windSpeed} breeze!`;
-      } else {
-        advice = `Yes, it's great weather for an ${isNight ? "evening walk or night jog" : "outdoor run or walk"} in ${city}! At a comfortable ${temp}°C (feels like ${feels}°C) with ${cond} skies and a ${currentWeather.windSpeed} breeze, conditions are very pleasant.`;
-      }
-    } 
-    // 3. Clothing / Wardrobe Queries
-    else if (q.includes("wear") || q.includes("cloth") || q.includes("jacket") || q.includes("dress") || q.includes("shirt") || q.includes("outfit")) {
-      if (temp <= 18) {
-        advice = `It's cool at ${temp}°C in ${city}. A light jacket, hoodie, or layered clothing will keep you comfortable outdoors.`;
-      } else if (temp >= 30 || hum > 80) {
-        advice = `With ${temp}°C (feels like ${feels}°C) and ${currentWeather.humidity} humidity in ${city}, go for lightweight, breathable cotton or moisture-wicking clothes.`;
-      } else {
-        advice = `At a pleasant ${temp}°C with ${cond} skies in ${city}, casual t-shirts or light comfortable wear are ideal right now.`;
-      }
-    } 
-    // 4. Sunrise / Sunset / Time Queries
-    else if (q.includes("sunrise") || q.includes("sunset") || q.includes("sun")) {
-      advice = `In ${city}, today's sunrise is at ${currentWeather.sunrise} and sunset is at ${currentWeather.sunset}. Current temperature is ${temp}°C with ${cond} conditions.`;
-    } 
-    // 5. Wind / Pressure / Humidity / General Weather Queries
-    else {
-      advice = `Live telemetry for ${city} shows ${temp}°C (feels like ${feels}°C) with ${cond} skies, ${currentWeather.humidity} humidity, and wind at ${currentWeather.windSpeed}. Overall atmospheric conditions are stable and comfortable!`;
+    } else if (q.includes("run") || q.includes("walk") || q.includes("jog") || q.includes("outdoor") || q.includes("workout")) {
+      advice = `At ${temp}°C with ${cond} skies in ${city}, conditions are optimal for your ${isNight ? "evening walk or night jog" : "outdoor run or walk"}! Enjoy the fresh breeze.`;
+    } else if (q.includes("wear") || q.includes("cloth") || q.includes("jacket")) {
+      advice = `With ${temp}°C and ${currentWeather.humidity} humidity in ${city}, light and breathable clothing is best suited for today's weather.`;
+    } else if (q.includes("sunrise") || q.includes("sunset") || q.includes("sun")) {
+      advice = `Today in ${city}, sunrise occurs at ${currentWeather.sunrise} and sunset at ${currentWeather.sunset}.`;
+    } else {
+      advice = `Live atmospheric telemetry for ${city}: ${temp}°C (feels like ${feels}°C), ${cond} skies, and ${currentWeather.humidity} humidity. Everything is stable!`;
     }
 
     setAiResponse(`Nexa AI: ${advice}`);
     setAiQuestion("");
   };
+
+  // Dynamic Real-Time Sun Status Tracker
+  const getSunTelemetryStatus = () => {
+    const currentHour = new Date().getHours();
+    if (currentHour >= 4 && currentHour < 7) {
+      return { sunriseSub: "Morning twilight • Dawn active 🌅", sunsetSub: "Evening twilight • Dusk approaching" };
+    } else if (currentHour >= 7 && currentHour < 17) {
+      return { sunriseSub: "Solar zenith • Peak daylight", sunsetSub: "Evening twilight • Dusk horizon" };
+    } else {
+      return { sunriseSub: "Morning twilight • Dawn approaching", sunsetSub: "Night telemetry • Dusk active 🌙" };
+    }
+  };
+
+  const sunStatus = getSunTelemetryStatus();
 
   // Dynamic Summary & Activity for AI Card Header
   const getDynamicAISummary = () => {
@@ -281,25 +270,13 @@ export default function App() {
 
     if (cond.includes("rain")) {
       return {
-        quote: `"Wet atmospheric conditions detected in ${currentWeather.city} (${temp}°C, ${currentWeather.humidity} humidity). Best to stay cozy indoors or carry rain gear."`,
-        activity: "Indoor workout, reading, or a cozy cafe visit"
-      };
-    }
-    if (temp >= 33) {
-      return {
-        quote: `"Warm conditions in ${currentWeather.city} at ${temp}°C (feels like ${currentWeather.feelsLike}°C). Stay hydrated and limit direct midday sun exposure."`,
-        activity: "Indoor fitness, swimming, or late evening stroll"
-      };
-    }
-    if (hum > 85) {
-      return {
-        quote: `"Calm ${cond} skies in ${currentWeather.city} at ${temp}°C with high humidity (${currentWeather.humidity}) and a gentle ${currentWeather.windSpeed} breeze."`,
-        activity: isNight ? "Relaxed evening walk or rooftop dining" : "Light outdoor stroll or photography"
+        quote: `"Wet atmospheric conditions detected in ${currentWeather.city} (${temp}°C, ${currentWeather.humidity} humidity). Best to stay cozy indoors."`,
+        activity: "Indoor workout, reading, or cozy cafe visit"
       };
     }
     return {
       quote: `"Pleasant ${cond} conditions in ${currentWeather.city} at ${temp}°C with ${currentWeather.pressure} pressure—ideal for stepping outside."`,
-      activity: isNight ? "Evening walk, night jog, or outdoor dining" : "Outdoor run, cycling, or tennis"
+      activity: isNight ? "Evening walk, night jog, or rooftop dining" : "Outdoor run, cycling, or tennis"
     };
   };
 
@@ -420,6 +397,31 @@ export default function App() {
             </div>
             <span style={{ display: "block", fontSize: "10px", fontWeight: "800", letterSpacing: "1px", color: "#38bdf8", marginTop: "4px" }}>RIGHT NOW</span>
           </div>
+        </div>
+      </section>
+
+      {/* Sunrise & Sunset Live Telemetry Cards */}
+      <section style={{ maxWidth: "1380px", margin: "24px auto 0", padding: "0 20px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "20px" }}>
+          
+          {/* Sunrise Card */}
+          <div style={{ background: "linear-gradient(145deg, rgba(11, 18, 36, 0.95), rgba(7, 11, 22, 0.98))", border: "1px solid rgba(251, 191, 36, 0.3)", borderRadius: "22px", padding: "24px 28px", boxShadow: "0 15px 35px rgba(0,0,0,0.5)" }}>
+            <span style={{ fontSize: "11px", fontWeight: "800", letterSpacing: "1px", color: "#fbbf24" }}>SUNRISE TELEMETRY</span>
+            <div style={{ fontSize: "40px", fontWeight: "700", fontFamily: "Space Grotesk, sans-serif", color: "#ffffff", margin: "10px 0 4px 0" }}>
+              {currentWeather.sunrise}
+            </div>
+            <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>{sunStatus.sunriseSub}</p>
+          </div>
+
+          {/* Sunset Card */}
+          <div style={{ background: "linear-gradient(145deg, rgba(11, 18, 36, 0.95), rgba(7, 11, 22, 0.98))", border: "1px solid rgba(168, 85, 247, 0.3)", borderRadius: "22px", padding: "24px 28px", boxShadow: "0 15px 35px rgba(0,0,0,0.5)" }}>
+            <span style={{ fontSize: "11px", fontWeight: "800", letterSpacing: "1px", color: "#c084fc" }}>SUNSET TELEMETRY</span>
+            <div style={{ fontSize: "40px", fontWeight: "700", fontFamily: "Space Grotesk, sans-serif", color: "#ffffff", margin: "10px 0 4px 0" }}>
+              {currentWeather.sunset}
+            </div>
+            <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>{sunStatus.sunsetSub}</p>
+          </div>
+
         </div>
       </section>
 
